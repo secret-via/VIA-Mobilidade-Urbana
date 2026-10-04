@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="dark">
+<title>VIA - Configurações</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='account.css') }}">
+</head>
+<body>
+<header class="s-top">
+  <a class="back" href="{{ url_for('index') }}">&larr; Voltar ao painel</a>
+  <span class="who">{{ account.org_name }} &middot; {{ account.plan_label }}</span>
+</header>
+
+<div class="s-layout">
+  <nav class="s-nav" aria-label="Configurações">
+    <h2>Configurações</h2>
+    {% for key, label in nav %}<a href="{{ url_for('settings_page', page=key) }}"{% if key == page %} aria-current="page"{% endif %}>{{ label }}</a>{% endfor %}
+  </nav>
+
+  <main class="s-main">
+  {% if page == 'perfil' %}
+    <h1>Perfil</h1>
+    <p class="lead">Como você aparece para a sua equipe.</p>
+    <section class="card">
+      <div class="profile-head"><span class="avatar" id="pAvatar">{% if account.avatar_url %}<img src="{{ account.avatar_url }}" alt="">{% else %}{{ account.initials }}{% endif %}</span><div><b id="pName">{{ account.name }}</b><span id="pEmail"></span>
+        <div class="avatar-actions"><label class="btn ghost small" for="avatarFile">Alterar foto</label><input type="file" id="avatarFile" accept="image/png,image/jpeg,image/webp" hidden><button type="button" class="btn ghost small" id="avatarRemove"{% if not account.avatar_url %} hidden{% endif %}>Remover foto</button></div>
+        <p class="msg" id="avatarMsg" role="status"></p></div></div>
+      <form id="nameForm" class="form-col">
+        <div><label for="fName">Nome</label><input id="fName" maxlength="80" autocomplete="name" placeholder="Seu nome"></div>
+        <div><label for="fEmail">E-mail de acesso</label><input id="fEmail" readonly><p class="hint">Para trocar o e-mail, fale com o responsável da sua organização ou com a VIA.</p></div>
+        <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(150px,1fr))">
+          <div><label>Organização</label><input id="fOrg" readonly></div>
+          <div><label>Função</label><input id="fRole" readonly></div>
+        </div>
+        <div class="actions"><button class="btn" type="submit">Salvar nome</button></div>
+        <p class="msg" id="nameMsg" role="status"></p>
+      </form>
+    </section>
+    <section class="card">
+      <h2>Município do mapa</h2><p class="sub">O mapa do painel abre centrado nele. Você também escolhe ao entrar.</p>
+      <form id="muniForm" class="form-col">
+        <div><label for="mUf">Estado</label><select id="mUf"><option value="">Carregando…</option></select></div>
+        <div><label for="mMun">Município</label><select id="mMun" disabled><option value="">Município</option></select></div>
+        <div class="actions"><button class="btn" type="submit" id="mSave" disabled>Salvar município</button></div>
+        <p class="msg" id="muniMsg" role="status"></p>
+      </form>
+    </section>
+
+  {% elif page == 'seguranca' %}
+    <h1>Segurança</h1>
+    <p class="lead">Proteja o acesso à sua conta.</p>
+    <section class="card">
+      <h2>Alterar senha</h2>
+      <p class="sub">Ao trocar a senha, os outros dispositivos conectados são desconectados.</p>
+      <form id="pwForm" class="form-col">
+        <div><label for="pwCur">Senha atual</label><input id="pwCur" type="password" autocomplete="current-password" required></div>
+        <div><label for="pwNew">Nova senha</label><input id="pwNew" type="password" autocomplete="new-password" minlength="8" maxlength="128" required><p class="hint">Mínimo de 8 caracteres. Evite usar o seu e-mail ou sequências repetidas.</p></div>
+        <div><label for="pwCon">Confirmar nova senha</label><input id="pwCon" type="password" autocomplete="new-password" required></div>
+        <div class="check"><input type="checkbox" id="pwShow"><label for="pwShow">Mostrar senhas</label></div>
+        <div class="actions"><button class="btn" type="submit">Alterar senha</button></div>
+        <p class="msg" id="pwMsg" role="status"></p>
+      </form>
+    </section>
+    <section class="card">
+      <h2>Sessão</h2>
+      <p class="sub">Encerre o acesso neste dispositivo, por exemplo em um computador compartilhado.</p>
+      <form method="post" action="{{ url_for('logout') }}"><button class="btn ghost" type="submit">Sair deste dispositivo</button></form>
+    </section>
+
+  {% elif page == 'plano' %}
+    <h1>Plano e uso</h1>
+    <p class="lead">O que a sua organização contratou e quanto já usou neste mês.</p>
+    <section class="card"><div class="grid" id="planBox"></div></section>
+    <section class="card"><h2>Consumo</h2><p class="sub" id="usageSub"></p><div class="grid" id="usageBox"></div></section>
+    <section class="card"><h2>O que o seu plano inclui</h2><p class="sub">Recursos liberados para todos os usuários da organização.</p><ul class="feat" id="featBox"></ul></section>
+    <section class="card" id="upgradeCard" hidden><h2>Precisa de mais?</h2><p class="sub">Para ampliar câmeras, usuários, relatórios ou liberar mais recursos, fale com a VIA.</p><a class="btn" style="display:inline-block;text-decoration:none;color:#06201b;background:var(--accent);padding:10px 16px;border-radius:9px;font-weight:650;font-size:13px" href="{{ url_for('index') }}#contato">Falar com a VIA</a></section>
+
+  {% elif page == 'equipe' %}
+    <h1>Equipe</h1>
+    <p class="lead">Quem tem acesso aos dados da sua organização.</p>
+    <section class="card">
+      <h2>Usuários</h2><p class="sub" id="teamSub"></p>
+      <table class="stack"><thead><tr><th>E-mail</th><th>Nome</th><th>Função</th><th>Último acesso</th><th>Situação</th><th></th></tr></thead><tbody id="users"></tbody></table>
+      <p class="msg" id="userMsg" role="status"></p>
+    </section>
+    <section class="card">
+      <h2>Adicionar usuário</h2><p class="sub">Envie a senha inicial por um canal seguro. A pessoa pode trocá-la em Configurações &rarr; Segurança.</p>
+      <form id="newUser" class="form-grid">
+        <div><label for="uEmail">E-mail</label><input id="uEmail" type="email" required autocomplete="off"></div>
+        <div><label for="uName">Nome</label><input id="uName" maxlength="80" autocomplete="off"></div>
+        <div><label for="uPass">Senha inicial</label><input id="uPass" type="password" minlength="8" required autocomplete="new-password"></div>
+        <div><button class="btn" type="submit">Adicionar</button></div>
+      </form>
+    </section>
+
+  {% elif page == 'cameras' %}
+    <h1>Câmeras</h1>
+    <p class="lead">Pontos de vídeo da sua organização.</p>
+    <section class="card"><h2>Uso do plano</h2><div class="grid" id="camQuota"></div></section>
+    <section class="card">
+      <h2>Câmeras conectadas</h2><p class="sub">Para adicionar ou remover câmeras, use o <a href="{{ url_for('index') }}">Monitoramento</a> no painel.</p>
+      <table class="stack"><thead><tr><th>Nome</th><th>Tipo</th><th>Situação</th></tr></thead><tbody id="cams"></tbody></table>
+    </section>
+
+  {% elif page == 'ajuda' %}
+    <h1>Ajuda e privacidade</h1>
+    <p class="lead">Suporte e como o VIA trata vídeo e dados.</p>
+    <section class="card"><h2>Suporte</h2><p class="sub">Abra um chamado de manutenção, relate um erro ou envie uma sugestão para a equipe da VIA.</p><a href="{{ url_for('index') }}#contato" style="display:inline-block;text-decoration:none;color:#06201b;background:var(--accent);padding:10px 16px;border-radius:9px;font-weight:650;font-size:13px">Abrir chamado</a></section>
+    <section class="card prose">
+      <h2>Privacidade e uso de dados</h2><p class="sub">Resumo.</p>
+      <p>O vídeo das câmeras é processado no servidor da VIA para contar veículos e pessoas e estimar condições de fluxo. Não há reconhecimento facial nem identificação de pessoas específicas.</p>
+      <p>Apenas dados agregados (contagens por classe, horários e níveis de congestionamento) ficam no histórico. Os frames de vídeo não são gravados de forma permanente.</p>
+      <p>Os dados da sua organização não são visíveis para outros clientes e não são compartilhados com terceiros fora da operação do sistema. Para pedir informação, correção ou remoção de dados, abra um chamado.</p>
+    </section>
+
+  {% elif page == 'administracao' %}
+    <h1>Administração VIA</h1>
+    <p class="lead">Clientes, planos e manutenção. Visível apenas para a equipe da VIA.</p>
+    <section class="card">
+      <h2>Organizações</h2><p class="sub">Uso do mês em relação aos limites de cada plano.</p>
+      <table class="stack"><thead><tr><th>Organização</th><th>Plano</th><th>Situação</th><th>Usuários</th><th>Câmeras</th><th>PDF/mês</th><th>Chat/mês</th><th></th></tr></thead><tbody id="orgs"></tbody></table>
+      <p class="msg" id="orgsMsg" role="status"></p>
+    </section>
+    <section class="card">
+      <h2>Nova organização</h2><p class="sub">Cria a organização e o responsável pelo acesso dela.</p>
+      <form id="newOrg" class="form-grid">
+        <div><label for="oName">Nome da organização</label><input id="oName" required></div>
+        <div><label for="oPlan">Plano</label><select id="oPlan"></select></div>
+        <div><label for="oExp">Vencimento do plano (opcional)</label><input id="oExp" type="date"></div>
+        <div><label for="oEmail">E-mail do responsável</label><input id="oEmail" type="email" required autocomplete="off"></div>
+        <div><label for="oOwner">Nome do responsável</label><input id="oOwner" autocomplete="off"></div>
+        <div><label for="oPass">Senha inicial</label><input id="oPass" type="password" minlength="8" required autocomplete="new-password"></div>
+        <div><button class="btn" type="submit">Criar organização</button></div>
+      </form>
+      <p class="msg" id="newMsg" role="status"></p>
+    </section>
+    <section class="card">
+      <h2>Manutenção</h2><p class="sub">Apaga o histórico de detecções, contagens e eventos da organização interna (VIA). Câmeras e modelos não são afetados. Não dá para desfazer.</p>
+      <form id="clearForm" class="form-col">
+        <div><label for="clearConfirm">Digite LIMPAR para confirmar</label><input id="clearConfirm" autocomplete="off"></div>
+        <div class="actions"><button class="btn danger" type="submit" id="clearBtn" disabled>Limpar histórico</button></div>
+        <p class="msg" id="clearMsg" role="status"></p>
+      </form>
+    </section>
+  {% endif %}
+  </main>
+</div>
+
+<script>
+const PAGE={{ page|tojson }};
+const PLAN_LABELS={{ plan_labels|tojson }};
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const ROLES={via_admin:'Equipe VIA',owner:'Responsável',member:'Usuário'};
+const STATUS={active:'Ativa',inactive:'Suspensa',expired:'Plano expirado'};
+const FEATURES=[['assistant','Assistente VIA','Pergunte aos dados em linguagem natural.'],['pdf','Relatórios em PDF','Exporte relatórios completos de qualquer período, com todo o detalhamento.']];
+async function api(url,opts){const r=await fetch(url,opts);const d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||('Erro '+r.status));return d}
+const send=(url,method,body)=>api(url,{method,headers:{'Content-Type':'application/json'},body:JSON.stringify(body||{})});
+function say(el,text,ok){el.className='msg '+(ok?'ok':'err');el.textContent=text}
+const lim=(used,l)=>l===null||l===undefined?`${used} <small>/ ilimitado</small>`:l===0?'<small>não incluído</small>':`${used} <small>/ ${l}</small>`;
+function meter(label,used,l){const bar=l&&l>0?(()=>{const r=used/l;return `<div class="bar ${r>=1?'full':r>=.8?'warn':''}"><i style="width:${Math.min(100,r*100)}%"></i></div>`})():'';return `<div class="stat"><div class="k">${esc(label)}</div><div class="v">${lim(used,l)}</div>${bar}</div>`}
+const when=iso=>iso?new Date(iso).toLocaleString('pt-BR',{dateStyle:'short',timeStyle:'short'}):'nunca';
+
+const PAGES={
+  async perfil(){
+    const me=await api('/api/me');
+    $('#fName').value=me.name||'';$('#fEmail').value=me.email;$('#fOrg').value=me.org.name;$('#fRole').value=ROLES[me.role]||me.role;$('#pEmail').textContent=me.email;
+    (async()=>{const uf=$('#mUf'),mun=$('#mMun'),save=$('#mSave'),msg=$('#muniMsg');
+      const states=await api('/api/geo/estados');uf.innerHTML='<option value="">Estado</option>'+states.map(s=>`<option value="${esc(s.sigla)}">${esc(s.nome)}</option>`).join('');
+      async function loadM(sigla,sel){mun.disabled=true;mun.innerHTML='<option value="">Município</option>';if(!sigla)return;const list=await api('/api/geo/municipios?uf='+encodeURIComponent(sigla));mun.innerHTML='<option value="">Município</option>'+list.map(m=>`<option value="${m.id}" ${String(m.id)===String(sel)?'selected':''}>${esc(m.nome)}</option>`).join('');mun.disabled=false;save.disabled=!mun.value}
+      if(me.municipio){uf.value=me.municipio.uf;await loadM(me.municipio.uf,me.municipio.id)}
+      uf.addEventListener('change',()=>loadM(uf.value).catch(e=>say(msg,e.message)));mun.addEventListener('change',()=>{save.disabled=!mun.value});
+      $('#muniForm').addEventListener('submit',async e=>{e.preventDefault();try{const r=await send('/api/me/municipio','POST',{id:mun.value});try{localStorage.setItem('via-municipio',JSON.stringify(r))}catch(_){}say(msg,'Município salvo: '+r.nome+' · '+r.uf+'. O mapa abre nele.',true)}catch(err){say(msg,err.message)}})})().catch(()=>{});
+    const setAvatar=url=>{const box=$('#pAvatar');box.innerHTML=url?`<img src="${esc(url)}" alt="">`:esc(box.dataset.initials||'');$('#avatarRemove').hidden=!url};
+    $('#pAvatar').dataset.initials={{ account.initials|tojson }};
+    $('#avatarFile').addEventListener('change',async e=>{const f=e.target.files[0];e.target.value='';if(!f)return;const m=$('#avatarMsg');
+      if(!/^image\/(png|jpeg|webp)$/.test(f.type))return say(m,'Use uma imagem JPG, PNG ou WebP.');
+      if(f.size>3*1024*1024)return say(m,'A imagem pode ter no máximo 3 MB.');
+      const body=new FormData();body.append('file',f);
+      try{const r=await fetch('/api/me/avatar',{method:'POST',body});const d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||('Erro '+r.status));setAvatar(d.avatar_url);say(m,'Foto atualizada.',true)}catch(err){say(m,err.message)}});
+    $('#avatarRemove').addEventListener('click',async()=>{const m=$('#avatarMsg');try{await api('/api/me/avatar',{method:'DELETE'});setAvatar(null);say(m,'Foto removida.',true)}catch(err){say(m,err.message)}});
+    $('#nameForm').addEventListener('submit',async e=>{e.preventDefault();try{const r=await send('/api/me','PATCH',{name:$('#fName').value});$('#pName').textContent=r.name||me.email;say($('#nameMsg'),'Nome salvo.',true)}catch(err){say($('#nameMsg'),err.message)}});
+  },
+  async seguranca(){
+    $('#pwShow').addEventListener('change',e=>['#pwCur','#pwNew','#pwCon'].forEach(s=>$(s).type=e.target.checked?'text':'password'));
+    $('#pwForm').addEventListener('submit',async e=>{e.preventDefault();const m=$('#pwMsg');
+      if($('#pwNew').value!==$('#pwCon').value)return say(m,'A confirmação não é igual à nova senha.');
+      try{await send('/api/me/password','POST',{current:$('#pwCur').value,new:$('#pwNew').value});say(m,'Senha alterada. Os outros dispositivos foram desconectados.',true);e.target.reset()}catch(err){say(m,err.message)}});
+  },
+  async plano(){
+    const me=await api('/api/me'),o=me.org,u=me.usage;
+    const exp=o.plan_expires_at?new Date(o.plan_expires_at).toLocaleDateString('pt-BR'):'sem vencimento';
+    $('#planBox').innerHTML=`<div class="stat"><div class="k">Plano</div><div class="v">${esc(o.plan_label)}</div></div><div class="stat"><div class="k">Situação</div><div class="v"><span class="tag ${esc(o.status)}">${esc(STATUS[o.status]||o.status)}</span></div></div><div class="stat"><div class="k">Vencimento</div><div class="v" style="font-size:16px">${esc(exp)}</div></div>`;
+    $('#usageSub').textContent='Relatórios e consultas ao assistente zeram no início de cada mês.';
+    $('#usageBox').innerHTML=meter('Câmeras',u.cameras,o.max_cameras)+meter('Usuários',u.users,o.max_users)+meter('Relatórios PDF no mês',u.pdf,o.pdf_per_month)+meter('Consultas ao assistente no mês',u.chat,o.chat_per_month);
+    $('#featBox').innerHTML=FEATURES.map(([k,t,d])=>{const on=o.features.includes(k);return `<li class="${on?'on':'off'}"><span class="ic">${on?'✓':'–'}</span><div><b>${esc(t)}</b><small>${on?esc(d):'Não incluído no seu plano.'}</small></div></li>`}).join('');
+    if(me.role!=='via_admin')$('#upgradeCard').hidden=false;
+  },
+  async equipe(){
+    const me=await api('/api/me');
+    async function load(){
+      const users=await api('/api/org/users');
+      $('#teamSub').textContent=`${users.filter(u=>u.active).length} ativo(s)`+(me.org.max_users===null?'':` de ${me.org.max_users} permitidos no plano`);
+      $('#users').innerHTML=users.map(u=>`<tr><td data-label="E-mail">${esc(u.email)}</td><td data-label="Nome">${esc(u.name||'—')}</td><td data-label="Função">${esc(ROLES[u.role]||u.role)}</td><td data-label="Último acesso">${esc(when(u.last_login_at))}</td><td data-label="Situação"><span class="tag ${u.active?'active':'inactive'}">${u.active?'Ativo':'Desativado'}</span></td><td>${u.email===me.email?'':`<button class="btn ghost" data-id="${u.id}" data-active="${u.active?0:1}">${u.active?'Desativar':'Reativar'}</button>`}</td></tr>`).join('');
+    }
+    $('#users').addEventListener('click',async e=>{const b=e.target.closest('button[data-id]');if(!b)return;try{await send(`/api/org/users/${b.dataset.id}/active`,'POST',{active:b.dataset.active==='1'});say($('#userMsg'),'',true);await load()}catch(err){say($('#userMsg'),err.message)}});
+    $('#newUser').addEventListener('submit',async e=>{e.preventDefault();const f=e.target;try{await send('/api/org/users','POST',{email:$('#uEmail').value,name:$('#uName').value,password:$('#uPass').value});say($('#userMsg'),'Usuário adicionado.',true);f.reset();await load()}catch(err){say($('#userMsg'),err.message)}});
+    await load();
+  },
+  async cameras(){
+    const [me,cams]=await Promise.all([api('/api/me'),api('/api/settings/cameras')]);
+    $('#camQuota').innerHTML=meter('Câmeras em uso',me.usage.cameras,me.org.max_cameras);
+    $('#cams').innerHTML=cams.length?cams.map(c=>`<tr><td data-label="Nome">${esc(c.name)}</td><td data-label="Tipo">${esc(c.kind)}</td><td data-label="Situação"><span class="dot ${c.connected?'live':''}"></span>${c.connected?'Conectada':'Sem sinal'}</td></tr>`).join(''):'<tr><td class="empty">Nenhuma câmera cadastrada ainda.</td></tr>';
+  },
+  async ajuda(){},
+  async administracao(){
+    $('#oPlan').innerHTML=Object.entries(PLAN_LABELS).filter(([k])=>k!=='interno').map(([k,v])=>`<option value="${esc(k)}" ${k==='intelligence'?'selected':''}>${esc(v)}</option>`).join('');
+    async function load(){
+      const orgs=await api('/api/admin/orgs');
+      $('#orgs').innerHTML=orgs.map(o=>{const l=o.limits,internal=o.plan==='interno';
+        const opts=Object.entries(PLAN_LABELS).filter(([k])=>k!=='interno').map(([k,v])=>`<option value="${esc(k)}" ${k===o.plan?'selected':''}>${esc(v)}</option>`).join('');
+        const f=(used,x)=>x===null||x===undefined?`${used} / ∞`:`${used} / ${x}`;
+        return `<tr data-id="${o.id}"><td data-label="Organização">${esc(o.name)}</td><td data-label="Plano">${internal?esc(PLAN_LABELS.interno):`<select data-act="plan" aria-label="Plano de ${esc(o.name)}">${opts}</select>`}</td><td data-label="Situação"><span class="tag ${esc(o.status)}">${esc(STATUS[o.status]||o.status)}</span></td><td data-label="Usuários">${f(o.users,l.max_users)}</td><td data-label="Câmeras">${f(o.cameras,l.max_cameras)}</td><td data-label="PDF/mês">${f(o.usage.pdf,l.pdf_per_month)}</td><td data-label="Chat/mês">${f(o.usage.chat,l.chat_per_month)}</td><td>${internal?'':`<button class="btn ghost" data-act="toggle" data-active="${o.active?0:1}">${o.active?'Suspender':'Reativar'}</button>`}</td></tr>`}).join('');
+    }
+    const patch=(id,body)=>send('/api/admin/orgs/'+id,'PATCH',body);
+    $('#orgs').addEventListener('change',async e=>{const s=e.target.closest('select[data-act=plan]');if(!s)return;try{await patch(s.closest('tr').dataset.id,{plan:s.value});say($('#orgsMsg'),'Plano atualizado.',true)}catch(err){say($('#orgsMsg'),err.message)}await load()});
+    $('#orgs').addEventListener('click',async e=>{const b=e.target.closest('button[data-act=toggle]');if(!b)return;try{await patch(b.closest('tr').dataset.id,{active:b.dataset.active==='1'});say($('#orgsMsg'),'',true)}catch(err){say($('#orgsMsg'),err.message)}await load()});
+    $('#newOrg').addEventListener('submit',async e=>{e.preventDefault();const m=$('#newMsg'),f=e.target;try{await send('/api/admin/orgs','POST',{name:$('#oName').value,plan:$('#oPlan').value,plan_expires_at:$('#oExp').value||null,owner_email:$('#oEmail').value,owner_name:$('#oOwner').value,owner_password:$('#oPass').value});say(m,'Organização criada. Envie o e-mail e a senha inicial ao responsável por um canal seguro.',true);f.reset();await load()}catch(err){say(m,err.message)}});
+    $('#clearConfirm').addEventListener('input',e=>{$('#clearBtn').disabled=e.target.value.trim()!=='LIMPAR'});
+    $('#clearForm').addEventListener('submit',async e=>{e.preventDefault();try{await send('/api/analytics/clear','POST');say($('#clearMsg'),'Histórico apagado.',true);$('#clearConfirm').value='';$('#clearBtn').disabled=true}catch(err){say($('#clearMsg'),err.message)}});
+    await load();
+  },
+};
+(PAGES[PAGE]||(async()=>{}))().catch(err=>{const m=document.querySelector('.msg')||document.querySelector('.lead');if(m){m.className='msg err';m.textContent=err.message}});
+</script>
+</body>
+</html>

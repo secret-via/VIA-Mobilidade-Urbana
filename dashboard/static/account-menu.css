@@ -1,0 +1,43 @@
+/* Menu de conta no topo do painel (estilo menu de perfil do Claude):
+   avatar + nome + plano, abre um popover com e-mail, plano, consumo e atalhos. */
+.acct{position:relative}
+.acct-btn{display:flex;align-items:center;gap:9px;background:transparent;border:1px solid transparent;border-radius:12px;padding:4px 8px 4px 4px;color:#010133;text-align:left}
+.acct-btn:hover,.acct-btn[aria-expanded="true"]{background:#e8f4ff;border-color:#d7e9fa}
+.acct-avatar img{width:100%;height:100%;object-fit:cover;display:block}
+.acct-avatar{overflow:hidden;flex:none;width:32px;height:32px;border-radius:50%;background:#4eaff7;color:#010133;display:grid;place-items:center;font-size:12px;font-weight:750;letter-spacing:.02em}
+.acct-id{display:flex;flex-direction:column;line-height:1.2;max-width:150px}
+.acct-id strong{font-size:12.5px;font-weight:650;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.acct-id small{font-size:11px;color:#5e7690}
+.acct-chevron{width:14px;height:14px;flex:none;stroke:#5e7690;fill:none;stroke-width:2;transition:transform .15s}
+.acct-btn[aria-expanded="true"] .acct-chevron{transform:rotate(180deg)}
+
+.acct-menu{position:absolute;right:0;top:calc(100% + 10px);width:312px;z-index:80;background:#fff;color:#010133;border:1px solid #d7e9fa;border-radius:16px;box-shadow:0 18px 48px rgba(1,1,51,.22);padding:8px;text-align:left}
+.acct-menu[hidden]{display:none}
+.acct-head{padding:10px 10px 12px}
+.acct-email{font-size:12px;color:#5e7690;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.acct-org{display:flex;align-items:center;gap:10px;margin-top:10px}
+.acct-org .acct-avatar{border-radius:9px;width:34px;height:34px}
+.acct-org b{display:block;font-size:13.5px}
+.acct-org span.role{font-size:11px;color:#5e7690}
+.acct-plan{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:2px 4px 6px;padding:9px 10px;border-radius:11px;background:#f3f8ff;border:1px solid #d7e9fa}
+.acct-plan b{font-size:13px}
+.acct-tag{font-size:10.5px;font-weight:650;border-radius:99px;padding:2px 9px;border:1px solid #d7e9fa;color:#5e7690;background:#fff}
+.acct-tag.active{color:#0e8a63;border-color:#59d4a6}
+.acct-tag.inactive,.acct-tag.expired{color:#c43a44;border-color:#ff6b73}
+.acct-usage{padding:4px 14px 8px;display:grid;gap:9px}
+.acct-usage-title{font-size:10px;font-weight:700;letter-spacing:.1em;color:#5e7690;text-transform:uppercase;padding:2px 0 0}
+.acct-row{font-size:12px}
+.acct-row .top{display:flex;justify-content:space-between;gap:8px}
+.acct-row .top span:last-child{color:#5e7690}
+.acct-bar{height:5px;border-radius:99px;background:#e8f4ff;margin-top:5px;overflow:hidden}
+.acct-bar i{display:block;height:100%;background:#4eaff7;border-radius:99px}
+.acct-bar.warn i{background:#f0b74a}
+.acct-bar.full i{background:#ff6b73}
+.acct-sep{height:1px;background:#e3eef9;margin:6px 4px}
+.acct-item{display:flex;align-items:center;gap:10px;width:100%;padding:9px 10px;border:0;background:transparent;border-radius:10px;color:#010133;font-size:13px;text-align:left;text-decoration:none;cursor:pointer}
+.acct-item:hover{background:#e8f4ff}
+.acct-item svg{width:16px;height:16px;flex:none;stroke:#3a5675;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.acct-item.upgrade{color:#0a5a96;font-weight:650}
+.acct-menu form{margin:0}
+@media(max-width:1180px){.acct-id,.acct-chevron{display:none}.acct-btn{padding:3px;border-radius:50%}}
+@media(max-width:640px){.acct-menu{position:fixed;right:10px;left:10px;top:auto;bottom:74px;width:auto}}

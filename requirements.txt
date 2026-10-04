@@ -1,0 +1,12 @@
+ultralytics
+opencv-python==4.10.0.84
+numpy
+lap>=0.5.12
+psycopg[binary]
+python-dotenv
+flask
+flask-sock
+requests
+reportlab
+matplotlib
+Pillow

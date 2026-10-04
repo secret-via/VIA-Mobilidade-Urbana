@@ -1,0 +1,1 @@
+"""Utilitários de visão computacional."""

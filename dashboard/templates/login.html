@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VIA - Acesso</title>
+<style>
+:root{--bg:#000000;--surface:#08091d;--surface2:#10134a;--line:#292d75;--text:#ffffff;--muted:#a7cbed;--soft:#e8f4ff;--accent:#4eaff7;--red:#ff6b73;--radius:13px;--shadow:0 18px 48px rgba(1,1,51,.32)}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--text);font:14px/1.45 Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;display:flex;align-items:center;justify-content:center;padding:20px}
+.card{width:100%;max-width:360px;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:32px}
+.card h1{font-size:20px;margin:0 0 4px}
+.card p{color:var(--muted);margin:0 0 24px;font-size:13px}
+label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px}
+input{width:100%;background:var(--surface2);border:1px solid var(--line);border-radius:9px;color:var(--text);padding:11px 12px;font-size:14px}
+input+label{margin-top:14px}
+input:focus,select:focus{outline:2px solid var(--accent);outline-offset:2px}
+select{width:100%;background:var(--surface2);border:1px solid var(--line);border-radius:9px;color:var(--text);padding:11px 12px;font-size:14px}
+select+label{margin-top:14px}.opt{opacity:.7}
+button{width:100%;margin-top:18px;background:var(--accent);border:0;color:#06201b;font-weight:650;border-radius:9px;padding:11px 12px;font-size:14px;cursor:pointer}
+button:hover{filter:brightness(1.05)}
+.error{margin:0 0 16px;color:var(--red);font-size:12px}
+</style>
+</head>
+<body>
+<form class="card" method="post" action="{{ url_for('login_submit', next=request.args.get('next')) }}">
+  <h1>VIA</h1>
+  <p>Inteligência para Mobilidade Urbana &mdash; acesso restrito.</p>
+  {% if error %}<p class="error">{{ error }}</p>{% endif %}
+  {% if multi_tenant %}
+  <label for="email">E-mail</label>
+  <input type="email" id="email" name="email" autocomplete="username" autofocus required>
+  <label for="password">Senha</label>
+  <input type="password" id="password" name="password" autocomplete="current-password" required>
+  {% else %}
+  <label for="password">Senha de acesso</label>
+  <input type="password" id="password" name="password" autofocus required>
+  {% endif %}
+  <button type="submit">Entrar</button>
+</form>
+</body>
+</html>

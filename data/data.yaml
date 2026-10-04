@@ -1,0 +1,10 @@
+train: train.txt
+val: val.txt
+
+names:
+  0: carro
+  1: moto
+  2: onibus
+  3: caminhao
+  4: pessoa
+  5: placa

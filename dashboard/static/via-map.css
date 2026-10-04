@@ -1,0 +1,59 @@
+/* Mapa operacional (Leaflet) */
+/* o mapa ocupa a altura que sobrar no cartão, sem deixar faixa vazia embaixo */
+.map-panel{display:flex;flex-direction:column}
+.vmap-wrap{position:relative;min-width:0;flex:1 1 auto;display:flex;flex-direction:column;min-height:440px}
+.via-map{flex:1 1 auto;min-height:440px;width:100%;background:#0b0f2a;border-radius:0 0 var(--radius) var(--radius);z-index:0}
+.via-map .leaflet-tile-pane{filter:invert(.92) hue-rotate(190deg) saturate(.65) brightness(.95)}
+.via-map .leaflet-container{font:inherit}
+.leaflet-popup-content-wrapper{background:#08091d;color:#fff;border:1px solid var(--line2);border-radius:12px}
+.leaflet-popup-tip{background:#08091d}
+.leaflet-popup-content{font-size:13px;line-height:1.5;margin:12px 14px}
+.leaflet-popup-content small{color:var(--muted)}
+.leaflet-container a.leaflet-popup-close-button{color:var(--muted)}
+.vmap-pin{display:grid!important;place-items:center;border-radius:50%;border:2px solid #fff;color:#fff;box-shadow:0 4px 12px rgba(0,0,0,.55);background:#59d4a6}
+.vmap-pin.off{background:#6b7a90}
+.vmap-pin.bad{background:#ff6b73}
+.vmap-pin svg{width:18px;height:18px;stroke:#010133;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.vmap-st{font-weight:700}.vmap-st.ok{color:#59d4a6}.vmap-st.off{color:#a7cbed}.vmap-st.bad{color:#ff6b73}
+/* a mensagem fica ABAIXO do mapa (não cobre o mapa) */
+.vmap-notice{margin:12px 16px 0;padding:9px 12px;border-radius:10px;background:var(--surface2);border:1px solid var(--line2);color:var(--soft);font-size:13px;overflow-wrap:anywhere}
+.vmap-notice.hidden{display:none}
+.vmap-notice.err{border-color:var(--red);color:#ffd5d8}
+.vmap-notice.warn{border-color:var(--amber)}
+.map-unplaced{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:12px 16px;border-top:1px solid var(--line);font-size:12px;color:var(--muted)}
+.map-unplaced.hidden{display:none}
+
+.leaflet-control .vmap-recenter{display:grid;place-items:center;width:34px;height:34px;padding:0;margin-top:6px;background:#fff;border:2px solid rgba(0,0,0,.2);border-radius:4px;cursor:pointer;color:#010133}
+.leaflet-control .vmap-recenter:hover{background:#e8f4ff}
+.vmap-recenter svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.vmap-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.vmap-actions button,.vmap-del{background:transparent;border:1px solid var(--line);border-radius:8px;color:var(--soft);font-size:12px;padding:6px 10px;cursor:pointer}
+.vmap-actions button:hover,.vmap-del:hover{border-color:var(--accent);color:#fff}
+.vmap-actions button.danger,.vmap-del{color:var(--red);border-color:rgba(255,107,115,.5)}
+.map-picker{position:absolute;inset:0;z-index:600;display:grid;place-items:center;padding:16px;background:rgba(1,1,30,.72)}
+.map-picker.hidden{display:none}
+.map-picker-card{width:min(380px,100%);background:var(--surface);border:1px solid var(--line2);border-radius:16px;padding:18px;display:grid;gap:12px;box-shadow:0 18px 48px rgba(0,0,0,.55)}
+.map-picker-card h3{margin:0;font-size:16px}
+.map-picker-card p{margin:0;color:var(--muted);font-size:12px}
+.map-picker-card select{width:100%;background:var(--surface2);color:var(--text);border:1px solid var(--line);border-radius:9px;padding:11px 12px;font-size:14px}
+.map-picker-actions{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap}
+
+@media(max-width:640px){
+  .vmap-wrap{min-height:0}
+  .via-map{flex:none;height:min(60vh,360px);min-height:0}
+}
+
+/* câmeras sem endereço localizado: o endereço se informa aqui */
+.map-unplaced{display:grid;gap:10px;padding:14px 16px;align-items:stretch}
+.vmap-missing-title{font-weight:700;color:var(--soft);font-size:13px}
+.vmap-missing{display:grid;grid-template-columns:minmax(90px,.7fr) minmax(0,2fr) auto;gap:10px;align-items:center}
+.vmap-missing-name{color:var(--soft);font-size:13px;overflow-wrap:anywhere}
+.vmap-addr{display:flex;gap:8px;min-width:0;margin-top:8px}
+.vmap-missing .vmap-addr{margin-top:0}
+.vmap-addr input{flex:1;min-width:0;background:var(--surface2);color:var(--text);border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:13px}
+.vmap-addr button{flex:none;background:var(--accent);color:#06201b;border:0;border-radius:8px;padding:8px 12px;font-size:12px;font-weight:650;cursor:pointer}
+.vmap-addr button:disabled{opacity:.5}
+.vmap-edit{margin-top:8px}
+.vmap-edit summary{cursor:pointer;color:var(--accent);font-size:12px}
+.vmap-del{border-radius:8px;padding:7px 10px;font-size:12px;cursor:pointer;background:transparent}
+@media(max-width:640px){.vmap-missing{grid-template-columns:1fr}.vmap-missing .vmap-del{justify-self:start}}

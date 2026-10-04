@@ -1,0 +1,227 @@
+/* Regra do painel: em NENHUMA largura de tela deve existir rolagem horizontal.
+   Rolagem vertical é livre. Tudo que não cabe se reorganiza (quebra, empilha,
+   vira ícone) em vez de ser cortado ou arrastado para o lado. */
+
+/* base: nenhum filho de grid/flex força a página a ficar mais larga que a tela */
+.app,.workspace,.content,.topbar,main,.panel,.view{min-width:0}
+img,video,canvas,svg{max-width:100%}
+pre,code{white-space:pre-wrap;overflow-wrap:anywhere}
+.panel,.metric,.stat-highlight-body,.occurrences-list,.info-list{overflow-wrap:anywhere}
+
+/* abas internas (Estatísticas: Indicadores | Ocorrências) */
+.subtabs{display:flex;gap:4px;margin:0 0 18px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.subtab{background:transparent;border:0;border-bottom:2px solid transparent;color:var(--muted);padding:9px 14px;font-size:13px;font-weight:600;margin-bottom:-1px;border-radius:0}
+.subtab:hover{color:var(--text)}
+.subtab.active{color:var(--accent);border-bottom-color:var(--accent)}
+
+/* Celular: barra de baixo única = logo + navegação + conta. Sem rolagem lateral:
+   os itens dividem a largura e, em telas bem estreitas, ficam só com o ícone. */
+@media(max-width:640px){
+  .sidebar{overflow:visible!important;justify-content:space-between!important;align-items:center;gap:8px!important;padding:6px 10px calc(6px + env(safe-area-inset-bottom))!important;flex-wrap:nowrap!important}
+  .sidebar .brand{position:static!important;display:flex!important;flex:none;width:40px;min-height:0!important;padding:0!important;align-items:center;justify-content:flex-start}
+  .sidebar .brand-logo{width:40px!important;height:auto!important;max-height:13px;object-fit:contain;filter:none!important;transform:none!important}
+  .sidebar>div:nth-child(2){flex:1 1 0;min-width:0}
+  .sidebar .nav{display:flex!important;width:100%;gap:0!important;justify-content:space-between}
+  .sidebar .nav-item{flex:1 1 0;min-width:0!important;padding:6px 2px!important}
+  .sidebar .nav-item span{max-width:100%;overflow:hidden;text-overflow:ellipsis}
+  /* conta = cartão branco arredondado flutuando no canto superior direito (avatar + nome + plano) */
+  .sidebar .side-status{position:fixed!important;top:calc(12px + env(safe-area-inset-top));right:12px;left:auto;width:auto;height:auto;padding:3px!important;background:#fff;border:1px solid #d7e9fa!important;border-radius:50%;box-shadow:0 8px 22px rgba(0,0,0,.38);display:flex!important;justify-content:flex-end;align-items:center;z-index:45}
+  .sidebar .side-status>.signal,.sidebar .side-status>p{display:none!important}
+  .acct-btn{padding:0!important;border-radius:12px;gap:7px}
+  .acct-avatar{width:36px;height:36px;font-size:13px}
+  .acct-id,.acct-chevron{display:none!important}
+  .acct-menu{top:calc(64px + env(safe-area-inset-top))!important;bottom:auto!important;left:10px;right:10px;width:auto!important}
+  /* os títulos deixam a área do cartão livre; botões do cabeçalho descem para a linha de baixo */
+  .content{padding-top:14px!important}
+  .content .page-head{padding-right:60px;min-height:42px;flex-wrap:wrap;gap:10px}
+  .assistant-fab{bottom:calc(72px + env(safe-area-inset-bottom))!important}
+}
+@media(max-width:400px){
+  .sidebar .nav-item span{display:none}
+  .sidebar .nav-item{padding:9px 2px!important}
+}
+
+/* Chat da VIA no celular: conversa em tela cheia (balões, campo e botão de enviar fixos
+   embaixo). Vale para a aba VIA e para o popup da bolinha, que vira uma folha cheia. */
+@media(max-width:640px){
+  #view-assistant.active{position:fixed;top:calc(62px + env(safe-area-inset-top));bottom:calc(50px + env(safe-area-inset-bottom));left:0;right:0;z-index:30;display:flex!important;flex-direction:column;background:var(--bg);padding:0!important}
+  #view-assistant>.page-head{display:none}
+  #view-assistant>div:last-child{flex:1;min-height:0;display:flex!important}
+  #assistantChatPanel{flex:1;min-height:0;display:flex;flex-direction:column;width:100%!important;max-width:none!important;border:0!important;border-radius:0!important;box-shadow:none!important;background:var(--bg)}
+  #assistantChatPanel .panel-head{padding:10px 14px;border-bottom:1px solid var(--line);background:var(--surface)}
+  #assistantChatPanel .panel-title{font-size:15px}
+  #assistantChatPanel .chat-body{flex:1;min-height:0;padding:0!important}
+  .chat-scroll{flex:1 1 auto;min-height:0;display:flex}
+  #chatMessages{flex:1 1 auto;min-height:0;max-height:none!important;margin:0!important;padding:14px 12px!important;gap:6px!important;overflow-y:auto;overscroll-behavior:contain}
+  .chat-down{bottom:12px}
+  .chat-suggest{margin:0 12px 8px;flex-direction:column;align-items:flex-start}
+  .chat-sug{font-size:14px;padding:9px 14px}
+  .chat-message{max-width:82%;padding:9px 13px;border-radius:18px;font-size:14px;line-height:1.45;white-space:pre-wrap;overflow-wrap:anywhere}
+  .chat-message.user{background:var(--accent);color:#010133;margin-left:auto;border-bottom-right-radius:5px}
+  .chat-message.assistant{background:var(--surface3);color:var(--soft);margin-right:auto;border-bottom-left-radius:5px}
+  /* campo de digitação em cartão alto e arredondado: texto em cima; "+" e enviar na linha de baixo */
+  .chat-composer{flex-direction:column!important;align-items:stretch!important;gap:4px!important;margin:6px 12px calc(10px + env(safe-area-inset-bottom))!important;padding:12px 12px 10px 16px!important;border-radius:26px;background:var(--surface2);border:1px solid var(--line)}
+  #chatInput{font-size:16px!important;line-height:1.4;border:0!important;background:transparent!important;padding:2px 0!important;min-height:56px!important;max-height:140px!important;box-shadow:none!important}
+  .chat-row{justify-content:space-between;width:100%}
+  #chatSend{flex:none;width:40px;height:40px;padding:0;border-radius:50%;font-size:0;background:var(--accent) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23010133' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 19V5M5 12l7-7 7 7'/%3E%3C/svg%3E") center/20px no-repeat}
+}
+
+/* estado vazio de grade (ex.: "Sem leitura ainda") ocupa a linha toda em vez de uma coluna estreita */
+.class-grid>:only-child{grid-column:1 / -1;max-width:none}
+
+/* Relatórios: só gerar/exportar */
+.rp-panel{margin-bottom:16px}
+.rp-form{padding:19px;display:flex;flex-direction:column;gap:16px}
+.rp-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px}
+.rp-grid .field-group small{color:var(--muted);font-weight:400}
+.rp-actions{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.rp-quota{font-size:12px;color:var(--muted)}
+.rp-list{margin:0;padding:6px 19px 0 38px;display:grid;gap:8px;color:var(--soft);font-size:13px}
+.rp-foot{margin:14px 19px 19px;font-size:12px;color:var(--muted)}
+.rp-foot .link-button{padding:0}
+
+/* VIA em popup (bolinha do canto). A aba "VIA" do menu abre a mesma conversa em tela cheia. */
+.assistant-popup{position:fixed;right:14px;bottom:128px;width:min(400px,calc(100vw - 28px));height:min(560px,calc(100vh - 150px));min-width:320px;min-height:360px;max-width:calc(100vw - 16px);max-height:calc(100vh - 16px);resize:both;z-index:60;display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--line2);border-radius:16px;box-shadow:0 18px 48px rgba(1,1,51,.55);overflow:hidden}
+.assistant-popup.hidden{display:none}
+.ap-head{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 12px;border-bottom:1px solid #d7e9fa;background:#f8fbff;color:#010133;cursor:grab;user-select:none;touch-action:none}
+.ap-head.dragging{cursor:grabbing}
+.ap-title{display:flex;align-items:center;gap:8px;font-weight:650}
+.ap-title .asst-logo{width:22px;height:22px}
+.ap-actions{display:flex;gap:4px}
+.ap-actions button{width:30px;height:30px;border-radius:8px;border:0;background:transparent;color:#3a5675;display:grid;place-items:center}
+.ap-actions button:hover{background:#e8f4ff;color:#010133}
+.ap-actions svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.ap-body{flex:1;min-height:0;display:flex;min-width:0}
+.ap-body #assistantChatPanel{flex:1;min-width:0;width:100%!important;max-width:none!important;border:0;border-radius:0;display:flex;flex-direction:column;background:transparent}
+.ap-body #assistantChatPanel .panel-head{display:none}
+.ap-body #assistantChatPanel>div:last-child{flex:1;min-height:0;display:flex;flex-direction:column;padding:14px!important}
+.ap-body #chatMessages{flex:1;min-height:0;max-height:none!important}
+.ap-body #assistantChatPanel .chat-body{padding:12px}
+.chat-message{overflow-wrap:anywhere}
+/* A conversa ocupa a altura da tela; o campo de digitação fica SEMPRE embaixo (cartão alto e arredondado). */
+#view-assistant.active{display:flex;flex-direction:column;height:calc(100vh - 150px);min-height:480px}
+#view-assistant>div:last-child{flex:1;min-height:0;display:flex;justify-content:center}
+#assistantChatPanel{display:flex;flex-direction:column;min-height:0}
+.chat-body{flex:1;min-height:0;padding:14px 16px 16px;display:flex;flex-direction:column}
+.chat-scroll{position:relative;flex:1 1 auto;min-height:0;display:flex}
+#chatMessages{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;gap:8px;overflow-y:auto;margin-bottom:12px;overscroll-behavior:contain}
+.chat-composer{display:flex;flex-direction:column;align-items:stretch;gap:4px;margin:0;padding:12px 12px 10px 16px;border-radius:26px;background:var(--surface2);border:1px solid var(--line)}
+.chat-composer textarea{width:100%;min-width:0;resize:none;min-height:56px;max-height:160px;padding:2px 0;font-size:15px;line-height:1.4;overflow-y:auto}
+/* sem contorno ao clicar/digitar: nem no campo nem no cartão (vence o estilo padrão de .field e :focus-visible) */
+#chatInput,#chatInput:focus,#chatInput:focus-visible,.chat-composer:focus-within{border:0!important;outline:none!important;box-shadow:none!important}
+#chatInput,#chatInput:focus,#chatInput:focus-visible{background:transparent!important}
+.chat-composer:focus-within{border:1px solid var(--line)!important}
+.chat-row{display:flex;align-items:center;justify-content:flex-end;gap:9px;width:100%}
+#chatSend{flex:none;width:40px;height:40px;padding:0;border-radius:50%;font-size:0;background:var(--accent) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23010133' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 19V5M5 12l7-7 7 7'/%3E%3C/svg%3E") center/20px no-repeat}
+.chat-suggest{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 10px}
+.chat-suggest[hidden]{display:none}
+.chat-sug{background:var(--surface2);border:1px solid var(--line);border-radius:99px;color:var(--soft);font-size:12px;padding:7px 12px;text-align:left}
+.chat-sug:hover{border-color:var(--accent);color:var(--text)}
+.chat-down{position:absolute;left:50%;bottom:8px;transform:translateX(-50%);width:36px;height:36px;border-radius:50%;border:1px solid var(--line);background:var(--surface3);color:var(--text);display:grid;place-items:center;padding:0;box-shadow:0 6px 18px rgba(0,0,0,.45)}
+.chat-down[hidden]{display:none}
+.chat-down svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+
+/* ===== Chat da VIA: histórico de conversas (lista ao lado, como o Claude) ===== */
+.chat-wrap{flex:1;min-height:0;display:flex;justify-content:center}
+#view-assistant #assistantChatPanel{width:100%;max-width:1040px}
+.chat-layout{position:relative;flex:1;min-height:0;display:flex;overflow:hidden;border-radius:inherit}
+.chat-main{flex:1;min-width:0;min-height:0;display:flex;flex-direction:column}
+.chat-top{display:flex;align-items:center;gap:8px;padding:10px 14px;border-bottom:1px solid var(--line);background:var(--surface)}
+.chat-title{flex:1;min-width:0;font-weight:650;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.chat-top button{width:34px;height:34px;border-radius:9px;border:0;background:transparent;color:var(--muted);display:grid;place-items:center;padding:0;flex:none}
+.chat-top button:hover{background:var(--surface3);color:var(--text)}
+.chat-top svg,.chat-new svg,.chat-hist-act svg{width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
+.chat-hist{position:absolute;z-index:6;top:0;bottom:0;left:0;width:min(290px,86%);display:flex;flex-direction:column;background:var(--surface);border-right:1px solid var(--line);transform:translateX(-102%);transition:transform .2s ease}
+.chat-layout.hist-open .chat-hist{transform:none;box-shadow:14px 0 40px rgba(0,0,0,.45)}
+.chat-hist-backdrop{position:absolute;inset:0;z-index:5;background:rgba(0,0,0,.5)}
+.chat-hist-backdrop[hidden]{display:none}
+.chat-hist-head{padding:12px}
+.chat-new{width:100%;display:flex;align-items:center;gap:8px;padding:10px 12px;border-radius:12px;border:1px solid var(--line2);background:var(--surface2);color:var(--text);font-size:13px;font-weight:650;cursor:pointer}
+.chat-new:hover{background:var(--surface3)}
+.chat-hist-list{flex:1;min-height:0;overflow-y:auto;padding:0 8px 12px}
+.chat-hist-group{padding:12px 8px 4px;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.chat-hist-empty{padding:14px 10px;color:var(--muted);font-size:12px}
+.chat-hist-item{display:flex;align-items:center;gap:2px;border-radius:10px}
+.chat-hist-item:hover,.chat-hist-item.active{background:var(--surface3)}
+.chat-hist-item.active .chat-hist-open{color:var(--accent);font-weight:650}
+.chat-hist-open{flex:1;min-width:0;text-align:left;background:transparent;border:0;color:var(--soft);font-size:13px;padding:9px 10px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;cursor:pointer}
+.chat-hist-act{flex:none;width:28px;height:28px;border:0;border-radius:7px;background:transparent;color:var(--muted);display:none;place-items:center;padding:0;cursor:pointer}
+.chat-hist-item:hover .chat-hist-act,.chat-hist-item:focus-within .chat-hist-act{display:grid}
+.chat-hist-act:hover{background:var(--surface2);color:var(--text)}
+@media(hover:none){.chat-hist-act{display:grid}}
+
+.chat-empty{margin:auto;max-width:520px;text-align:center;padding:24px 8px}
+.chat-empty h3{margin:0 0 6px;font-size:20px}
+.chat-empty p{margin:0 0 18px;color:var(--muted);font-size:14px}
+.chat-starters{display:flex;flex-direction:column;gap:8px;align-items:center}
+/* animação enquanto a VIA consulta os dados: o robozinho da VIA. Regra de marca: fundo escuro ->
+   logo CLARA (e fundo claro -> logo escura). O balão é escuro, então usa a versão clara. Ele
+   flutua, inclina a cabeça, o "olho" do visor varre de um lado ao outro e um anel pulsa. */
+.chat-message.thinking{display:flex;align-items:center;gap:12px;padding:8px 16px 8px 10px}
+.chat-bot{position:relative;flex:none;display:grid;place-items:center;width:36px;height:36px;border-radius:50%;animation:botFloat 1.8s ease-in-out infinite}
+.chat-bot::before{content:'';position:absolute;inset:0;border-radius:50%;border:2px solid rgba(78,175,247,.7);animation:botRing 1.8s ease-out infinite}
+.chat-bot-fig{position:relative;width:26px;height:26px;animation:botTilt 2.4s ease-in-out infinite}
+.chat-bot-fig img{display:block;width:100%;height:100%}
+.chat-bot-eye{position:absolute;left:30%;width:40%;top:29%;height:10%;background:var(--surface3);overflow:hidden}
+.chat-bot-eye::after{content:'';position:absolute;top:0;bottom:0;left:0;width:36%;border-radius:2px;background:#e8f4ff;animation:botScan 1.1s ease-in-out infinite alternate}
+.chat-typing-label{font-size:13px;color:transparent;background:linear-gradient(90deg,var(--muted) 30%,#fff 50%,var(--muted) 70%) 200% 0/200% 100%;-webkit-background-clip:text;background-clip:text;animation:chatShimmer 1.8s linear infinite}
+@keyframes botFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+@keyframes botRing{0%{transform:scale(1);opacity:.8}100%{transform:scale(1.55);opacity:0}}
+@keyframes botTilt{0%,100%{transform:rotate(-7deg)}50%{transform:rotate(7deg)}}
+@keyframes botScan{from{left:0}to{left:64%}}
+@keyframes chatShimmer{to{background-position:-200% 0}}
+@media(prefers-reduced-motion:reduce){.chat-bot,.chat-bot::before,.chat-bot-fig,.chat-bot-eye::after,.chat-typing-label{animation:none}.chat-bot::before{display:none}.chat-bot-eye::after{left:32%}.chat-typing-label{color:var(--muted);background:none}}
+
+/* ícones do menu: mesmo tamanho em todos (antes encolhiam quando o texto ocupava o espaço) */
+.nav-item svg,.nav-item img{flex:none}
+.nav-item svg{width:18px;height:18px;min-width:18px}
+
+/* botões: ícone e texto sempre centralizados */
+.button,.btn,.chat-new,.chat-report,.vmap-addr button,.vmap-del,.map-picker-actions button,.filter,.subtab,.icon-button{display:inline-flex;align-items:center;justify-content:center;gap:8px;text-align:center}
+.chat-new{display:flex;width:100%}
+.chat-report{display:flex;width:max-content;max-width:100%}
+.chat-report{margin-top:10px;display:block}
+
+/* ===== VIA em PÁGINA INTEIRA no desktop (como o ChatGPT) ===== */
+@media(min-width:1024px){
+  .on-assistant .topbar,.on-assistant .app-footer{display:none}
+  .on-assistant .content{padding:0!important;max-width:none!important}
+  #view-assistant.active{height:calc(100vh - var(--navh,64px));min-height:0}
+  #view-assistant>.page-head{display:none}
+  #view-assistant .chat-wrap{justify-content:stretch}
+  #view-assistant #assistantChatPanel{max-width:none;border:0;border-radius:0;box-shadow:none;background:var(--bg)}
+  #view-assistant .chat-hist{width:272px;background:#04040f}
+  #view-assistant .chat-top{background:transparent;border-bottom:0;padding:14px 22px}
+  #view-assistant .chat-top .chat-title{text-align:center;color:var(--soft)}
+  #view-assistant #chatNewSm{display:none}
+  #view-assistant .chat-body{padding:0}
+  #view-assistant #chatMessages{width:min(820px,100%);margin:0 auto;padding:10px 24px 8px!important}
+  #view-assistant .chat-message{font-size:15px;max-width:80%}
+  /* campo numa linha só: + | texto | enviar */
+  #view-assistant .chat-composer{flex-direction:row;align-items:center;gap:10px;width:min(800px,calc(100% - 48px));margin:0 auto 22px;padding:8px 10px;border-radius:30px}
+  #view-assistant .chat-row{display:contents}
+  #view-assistant #chatInput{order:1;flex:1;min-height:40px!important;padding:8px 0!important;font-size:16px}
+  #view-assistant #chatSend{order:2}
+  /* conversa vazia: título, campo e sugestões no meio da página */
+  #view-assistant .chat-main.is-empty .chat-body{justify-content:center;align-items:center}
+  #view-assistant .chat-main.is-empty .chat-scroll{flex:none;order:1;width:100%}
+  #view-assistant .chat-main.is-empty #chatMessages{max-height:none;overflow:visible;padding:0 0 22px!important}
+  #view-assistant .chat-main.is-empty .chat-empty{margin:0 auto;padding:0}
+  #view-assistant .chat-main.is-empty .chat-empty h3{font-size:30px;margin-bottom:8px}
+  #view-assistant .chat-main.is-empty .chat-composer{order:2;margin:0 auto}
+  #view-assistant .chat-main.is-empty .chat-suggest{order:3;width:min(800px,calc(100% - 48px));flex-direction:column;align-items:stretch;gap:2px;margin:18px auto 0}
+  #view-assistant .chat-main.is-empty .chat-sug{border:0;background:transparent;border-radius:12px;padding:12px 14px;font-size:15px}
+  #view-assistant .chat-main.is-empty .chat-sug:hover{background:var(--surface2)}
+}
+
+/* aba VIA no desktop largo: a lista de conversas fica sempre à vista */
+@media(min-width:1024px){
+  #view-assistant .chat-hist{position:static;transform:none;width:260px;flex:none;box-shadow:none}
+  #view-assistant .chat-hist-btn,#view-assistant .chat-hist-backdrop{display:none}
+}
+/* popup: a lista abre como gaveta dentro da janela */
+.ap-body .chat-layout{border-radius:0}
+.chat-hist-edit{flex:1;min-width:0;margin:3px 4px;padding:7px 9px;border-radius:8px;border:1px solid var(--accent);background:var(--surface2);color:var(--text);font-size:13px;outline:0}
+.chat-hist-act.armed{display:grid;background:#b3261e;color:#fff}
+.chat-hist-item:has(.chat-hist-act.armed) .chat-hist-act{display:grid}
